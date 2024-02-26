@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
-#include "../lib/TreeNode.h"
-#include "../lib/util.h"
+#include "../../lib/TreeNode.h"
+#include "../../lib/util.h"
 
 using namespace std;
 

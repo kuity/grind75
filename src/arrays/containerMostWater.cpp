@@ -3,6 +3,12 @@
 
 using namespace std;
 
+/*
+Link: 
+https://leetcode.com/problems/container-with-most-water/description/
+Difficulty: Medium
+Topics: array, two pointers, greedy
+*/
 class Solution {
 public:
     // Brute force: nested for loop can account for all containers

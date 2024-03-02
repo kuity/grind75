@@ -20,6 +20,11 @@ void printPreOrder(TreeNode* root) {
     printPreOrder(root->right);  // Recursively print the right subtree
 }
 
+/*
+Link: https://leetcode.com/problems/invert-binary-tree/description/
+Difficulty: Easy
+Topics: dfs, bfs, tree, binary tree
+*/
 class Solution {
 public:
     TreeNode* invertTree(TreeNode* root) {

@@ -3,9 +3,9 @@
 using namespace std;
 
 /*
-Link: https://leetcode.com/problems/house-robber/description/
-Difficulty: Medium
-Topics: Array, DP
+link: https://leetcode.com/problems/house-robber/description/
+difficulty: medium
+topics: array, dp
 */
 class Solution {
 public:

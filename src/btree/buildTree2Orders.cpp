@@ -2,6 +2,12 @@
 #include "../../lib/TreeNode.h"
 
 using namespace std;
+
+/*
+Link: https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/description/
+Difficulty: Medium
+Topics: array, hashtable, divide and conquer, tree, binary tree
+*/
 class Solution {
 public:
     // Simple recursive solution to construct the tree

@@ -6,6 +6,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/word-break/description/
+Difficulty: Medium
+Topics: array, hashtable, string, dp, trie, memoization
+*/
 class Solution {
 private:
     unordered_map<string, bool> DP;

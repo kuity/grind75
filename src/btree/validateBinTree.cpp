@@ -2,10 +2,15 @@
 #include <stack>
 #include <tuple>
 #include <limits>
-#include "../lib/TreeNode.h"
+#include "../../lib/TreeNode.h"
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/validate-binary-search-tree/description/
+Difficulty: Medium
+Topics: dfs, tree, binary tree, binary search tree
+*/
 class Solution {
 public:
     bool isValidBST(TreeNode* root) {

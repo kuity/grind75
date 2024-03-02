@@ -2,6 +2,11 @@
 #include <unordered_map>
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/word-search/description/
+Difficulty: Medium
+Topics: array, string, backtracking, matrix
+*/
 class Solution {
 private:
     vector<vector<char>> B;

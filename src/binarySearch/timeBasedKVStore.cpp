@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/time-based-key-value-store/description/
+Difficulty: Medium
+Topics: hashtable, string, binary search, design
+*/
 class TimeMap {
 private:
     unordered_map<string, vector<pair<int, string>>> M;

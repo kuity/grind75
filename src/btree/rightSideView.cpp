@@ -3,6 +3,12 @@
 #include "../../lib/util.h"
 
 using namespace std;
+
+/*
+Link: https://leetcode.com/problems/binary-tree-right-side-view/description/
+Difficulty: Medium
+Topics: dfs, bfs, tree, binary tree
+*/
 class Solution {
 public:
     // An iterative solution that slightly modify level order traversal

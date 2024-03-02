@@ -3,6 +3,11 @@
 #include <set>
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/partition-equal-subset-sum/description/
+Difficulty: Medium
+Topics: array, dp
+*/
 class Solution {
 private:
     set<int> sumsPossible;

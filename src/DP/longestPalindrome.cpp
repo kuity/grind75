@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/longest-palindromic-substring/description/
+Difficulty: Medium
+Topics: string, dp
+*/
 class Solution {
 private:
     unordered_map<char, vector<int>> charPos;

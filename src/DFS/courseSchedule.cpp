@@ -1,14 +1,17 @@
 #include <iostream>
-#include <queue>
 #include <set>
 #include <vector>
 #include <unordered_map>
-#include <algorithm>
 #include <stack>
-#include "../lib/util.h"
+#include "../../lib/util.h"
 
 using namespace std;
 
+/*
+link: https://leetcode.com/problems/course-schedule/description/
+difficulty: medium
+topics: dfs, bfs, graph, topological sort
+*/
 class Solution {
 private:
     unordered_map<int, stack<int>> edges;

@@ -1,8 +1,12 @@
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/first-bad-version/description/
+Difficulty: Easy
+Topics: binary search, interactive
+*/
 class Solution {
 private:
     bool isBadVersion(int n) {

@@ -3,22 +3,28 @@
 
 using namespace std;
 
-// Recursive solution:
-//
-// If the root node value is either p or q
-// We return the root node 
-// The search no need to continue, because if the unfound p or q 
-// is one of the children, the root node is still the LCA
-//
-// If search node is null, return null (= not found)
-//
-// Otherwise, we recursively search left child and right child
-// If either search rets null, the LCA is the ret value of the other search
-// As both p and q must be on the other side
-//
-// If both are not null, the LCA must be the root
+/*
+Link: 
+https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/description/
+Difficulty: Medium
+Topics: dfs, bfs, tree, binary tree
+*/
 class Solution {
 public:
+    // Recursive solution:
+    //
+    // If the root node value is either p or q
+    // We return the root node 
+    // The search no need to continue, because if the unfound p or q 
+    // is one of the children, the root node is still the LCA
+    //
+    // If search node is null, return null (= not found)
+    //
+    // Otherwise, we recursively search left child and right child
+    // If either search rets null, the LCA is the ret value of the other search
+    // As both p and q must be on the other side
+    //
+    // If both are not null, the LCA must be the root
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
         if (root == NULL) {
             return NULL;

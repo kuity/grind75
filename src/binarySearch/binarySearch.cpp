@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/binary-search/description/
+Difficulty: Easy
+Topics: array, binary search
+*/
 class Solution {
 public:
     int search(vector<int>& nums, int target) {

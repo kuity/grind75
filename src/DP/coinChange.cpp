@@ -3,10 +3,15 @@
 #include <vector>
 #include <unordered_map>
 #include <limits>
-#include "../lib/util.h"
+#include "../../lib/util.h"
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/coin-change/description/
+Difficulty: Medium
+Topics: bfs, array, dp
+*/
 class Solution {
 public:
     /*

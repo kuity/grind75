@@ -5,6 +5,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/minimum-height-trees/description/
+Difficulty: Medium
+Topics: dfs, bfs, graph, topological sort
+*/
 class Solution {
 private:
     unordered_map<int, vector<int>> M;

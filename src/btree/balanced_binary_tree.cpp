@@ -1,5 +1,4 @@
 #include <iostream>
-#include <unordered_map>
 #include <algorithm>
 #include <utility>
 
@@ -14,6 +13,11 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+/*
+Link: https://leetcode.com/problems/balanced-binary-tree/description/
+Difficulty: Easy
+Topics: tree, dfs, binary tree
+*/
 class Solution {
 public:
     pair<int, bool> helper(TreeNode* t) {

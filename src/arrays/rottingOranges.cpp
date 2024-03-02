@@ -1,12 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <stack>
 #include <unordered_map>
-#include "../lib/util.h"
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/rotting-oranges/description/
+Difficulty: Medium
+Topics: array, bfs, matrix
+*/
 class Solution {
 private:
 	// Define a custom hash function for pairs of integers

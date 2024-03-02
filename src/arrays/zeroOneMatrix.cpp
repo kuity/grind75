@@ -17,7 +17,11 @@ void printVecVec(vector<vector<int>> v) {
     std::cout << std::endl;
 }
 
-
+/*
+Link: https://leetcode.com/problems/01-matrix/description/
+Difficulty: Medium
+Topics: array, dp, bfs, matrix
+*/
 // Bottom up idea
 // SCORE is 0
 // First look for the zeros and add them to STACK 

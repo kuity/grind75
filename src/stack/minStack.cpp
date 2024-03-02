@@ -10,6 +10,11 @@ struct Patty {
     Patty(Patty* prev, int v) : prevPatty(prev), val(v) {}
 };
 
+/*
+Link: https://leetcode.com/problems/min-stack/description/
+Difficulty: Medium
+Topics: stack, design
+*/
 class MinStack {
 public:
     stack<Patty *> stacker;

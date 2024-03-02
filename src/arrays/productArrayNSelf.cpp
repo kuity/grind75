@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/product-of-array-except-self/description/
+Difficulty: Medium
+Topics: array, prefix sum
+*/
 class Solution {
 public:
     vector<int> productExceptSelf(vector<int>& nums) {

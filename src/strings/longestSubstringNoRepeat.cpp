@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/longest-substring-without-repeating-characters/description/
+Difficulty: Medium
+Topics: hashtable, string, sliding window
+*/
 class Solution {
 public:
     int addCharsToSet(string s, unordered_set<int>&H) {

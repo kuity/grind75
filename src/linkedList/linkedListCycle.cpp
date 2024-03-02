@@ -1,6 +1,4 @@
 #include <iostream>
-#include <algorithm>
-#include <utility>
 
 using namespace std;
 
@@ -10,6 +8,11 @@ struct ListNode {
     ListNode(int x) : val(x), next(NULL) {}
 };
 
+/*
+Link: https://leetcode.com/problems/linked-list-cycle/description/
+Difficulty: easy
+Topics: hashtable, linked list, two pointers
+*/
 class Solution {
 public:
     bool hasCycle(ListNode *head) {

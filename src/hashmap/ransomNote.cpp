@@ -3,7 +3,11 @@
 
 using namespace std;
 
-
+/*
+Link: https://leetcode.com/problems/ransom-note/description/
+Difficulty: Easy
+Topics: hashtable, counting, string
+*/
 class Solution {
 public:
     bool canConstruct(string ransomNote, string magazine) {

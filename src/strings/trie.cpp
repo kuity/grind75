@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/implement-trie-prefix-tree/description/
+Difficulty: Medium
+Topics: hashtable, trie, design, string
+*/
 class Trie {
 public:
     vector<Trie*> children;

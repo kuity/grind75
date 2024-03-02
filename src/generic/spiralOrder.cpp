@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/spiral-matrix/description/
+Difficulty: Medium
+Topics: array, matrix, simulation
+*/
 class Solution {
 public:
     vector<int> spiralOrder(vector<vector<int>>& matrix) {

@@ -10,24 +10,29 @@ void printVec(vector<int> v) {
     std::cout << std::endl;
 }
 
-/* 
- * The first idea is using 3 loops and a lot of precalculation
- * For every index i in the array, we maintain the MINIMUM sum seen so far from index 0 to index i-1 (Bmin)
- * AND the MINIMUM sum seen so far from index i+1 to end (Amin)
- * By default Bmin == 0, in the case no elements are discarded from the subarray
- * If however Bmin < 0, then it means at some index x <= i-1, the sum is < 0, so we can discard elements 0 to x, to increase the subarray sum
- * The same logic applies for Amin
- *
- * The second method is just an optimization of the first idea to use 2 loops instead
- *
- * The third method is a DP solution tracking a global maximum
- * Given an array A, define subproblem S(i) to mean the maximum subarray of A[0:i] which must contain A[i].
- * Then the max subarray of A is simply the maximum S(i) over each posible value of i.
- * By this definition, it follows that S(i) = [ S(i-1) > 0 ? S(i-1) : 0 ] + A[i]
- *
+/*
+Link: https://leetcode.com/problems/maximum-subarray/
+Difficulty: Medium
+Topics: array, divide and conquer, dp
 */
 class Solution {
 public:
+    /* 
+     * The first idea is using 3 loops and a lot of precalculation
+     * For every index i in the array, we maintain the MINIMUM sum seen so far from index 0 to index i-1 (Bmin)
+     * AND the MINIMUM sum seen so far from index i+1 to end (Amin)
+     * By default Bmin == 0, in the case no elements are discarded from the subarray
+     * If however Bmin < 0, then it means at some index x <= i-1, the sum is < 0, so we can discard elements 0 to x, to increase the subarray sum
+     * The same logic applies for Amin
+     *
+     * The second method is just an optimization of the first idea to use 2 loops instead
+     *
+     * The third method is a DP solution tracking a global maximum
+     * Given an array A, define subproblem S(i) to mean the maximum subarray of A[0:i] which must contain A[i].
+     * Then the max subarray of A is simply the maximum S(i) over each posible value of i.
+     * By this definition, it follows that S(i) = [ S(i-1) > 0 ? S(i-1) : 0 ] + A[i]
+     *
+    */
     int maxSubArrayDp(vector<int>& nums) {
 	long globalMax = nums[0];
 	vector<long> dp(nums.size());

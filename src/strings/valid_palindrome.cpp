@@ -2,7 +2,11 @@
 
 using namespace std;
 
-
+/*
+Link: https://leetcode.com/problems/valid-palindrome/description/
+Difficulty: Easy
+Topics: two pointers, string
+*/
 class Solution {
 public:
     bool isPalindrome(string s) {

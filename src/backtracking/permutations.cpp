@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/permutations/description/
+Difficulty: Medium
+Topics: array, backtracking
+*/
 class Solution {
 public:
     // This is intuitive solution without swapping

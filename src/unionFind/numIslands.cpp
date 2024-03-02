@@ -5,6 +5,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/number-of-islands/
+Difficulty: Medium
+Topics: array, dfs, bfs, union find, matrix
+*/
 class Solution {
 public:
     // DFS traversal

@@ -5,6 +5,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/accounts-merge/description/
+Difficulty: Medium
+Topics: array, hashtable, union find, dfs, bfs, string, sorting
+*/
 class Solution {
 private:
     unordered_map<string, string> owner;

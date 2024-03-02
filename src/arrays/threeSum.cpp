@@ -7,6 +7,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/3sum/description/
+Difficulty: Medium
+Topics: array, two pointers, sorting
+*/
 class Solution {
 public:
     // Prebuilding a "positional" reference

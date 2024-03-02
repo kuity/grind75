@@ -1,10 +1,14 @@
-#include <iostream>
 #include <functional>
 #include <queue>
 #include "../lib/util.h"
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/k-closest-points-to-origin/description/
+Difficulty: Medium
+Topics: array, math, divide and conquer, geometry, sorting, heap
+*/
 class Solution {
 public:
     vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {

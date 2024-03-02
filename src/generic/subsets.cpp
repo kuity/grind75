@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/subsets/description/
+Difficulty: Medium
+Topics: array, backtracking, bit manipulation
+*/
 class Solution {
 private:
 public:

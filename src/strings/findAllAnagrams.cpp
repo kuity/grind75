@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/find-all-anagrams-in-a-string/description/
+Difficulty: Medium
+Topics: hashtable, string, sliding window
+*/
 class Solution {
 public:
     // Idea. Keep string in a "frequency array" and keep sliding the window

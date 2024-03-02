@@ -4,6 +4,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+Difficulty: Medium
+Topics: hashtable, string, backtracking
+*/
 class Solution {
 private:
     unordered_map<int, vector<char>> map = {

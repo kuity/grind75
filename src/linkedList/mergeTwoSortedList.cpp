@@ -10,6 +10,11 @@ struct ListNode {
     ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
+/*
+Link: https://leetcode.com/problems/merge-two-sorted-lists/description/
+Difficulty: Easy
+Topics: linked list, recursion
+*/
 class Solution {
 public:
     ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {

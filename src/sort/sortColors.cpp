@@ -3,6 +3,11 @@
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/sort-colors/description/
+Difficulty: Medium
+Topics: array, two pointers, sorting
+*/
 class Solution {
 private:
     int zeroIndex;

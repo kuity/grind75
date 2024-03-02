@@ -1,22 +1,26 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
 
 using namespace std;
 
 /*
- * 1. Find the rotation point in O(log n)
- * How? we take A[0], the pivot point must be < A[0]
- * We take A[n/2]. If > A[0], pivot point must be on the right
- * If < A[0], pivot point is on the left. Then can keep searching.
- * 2. check target T > A[p]? Yes, bsearch left array. No, bsearch right array
- *
- * More efficient soln (check LC)
- * No need to find pivot, can directly apply binSearch as one half of the array
- * will always be sorted
+Link: https://leetcode.com/problems/search-in-rotated-sorted-array/description/
+Difficulty: Medium
+Topics: array, binary search
 */
 class Solution {
 public:
+    /*
+     * 1. Find the rotation point in O(log n)
+     * How? we take A[0], the pivot point must be < A[0]
+     * We take A[n/2]. If > A[0], pivot point must be on the right
+     * If < A[0], pivot point is on the left. Then can keep searching.
+     * 2. check target T > A[p]? Yes, bsearch left array. No, bsearch right array
+     *
+     * More efficient soln (check LC)
+     * No need to find pivot, can directly apply binSearch as one half of the array
+     * will always be sorted
+    */
     int binSearch(vector<int> & nums, int target, int left, int right) {
 	int mid;
 	int midnum;

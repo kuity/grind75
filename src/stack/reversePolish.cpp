@@ -1,10 +1,14 @@
 #include <iostream>
-#include <unordered_map>
 #include <vector>
 #include <stack>
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/evaluate-reverse-polish-notation/description/
+Difficulty: Medium
+Topics: array, math, stack
+*/
 class Solution {
 public:
     pair<int, int> pop2 (stack<int> & S) {

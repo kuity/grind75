@@ -1,11 +1,13 @@
-#include <iostream>
 #include <vector>
-#include <stack>
-#include <algorithm>
 #include "../lib/util.h"
 
 using namespace std;
 
+/*
+Link: https://leetcode.com/problems/merge-intervals/description/
+Difficulty: Medium
+Topics: array, sorting
+*/
 class Solution {
 public:
     vector<vector<int>> merge(vector<vector<int>>& intervals) {

@@ -3,7 +3,11 @@
 
 using namespace std;
 
-
+/*
+Link: https://leetcode.com/problems/valid-anagram/description/
+Difficulty: easy
+Topics: hashtable, string, sorting
+*/
 class Solution {
 public:
     bool isAnagram(string s, string t) {

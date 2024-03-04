@@ -6,7 +6,7 @@ using namespace std;
 /*
 Link: https://leetcode.com/problems/design-add-and-search-words-data-structure/
 Difficulty: Medium
-Topics: 
+Topics: string, dfs, design, trie
 */
 class WordDictionary {
 public:

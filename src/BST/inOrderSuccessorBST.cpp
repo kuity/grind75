@@ -13,7 +13,7 @@ struct TreeNode {
 /*
 Link: https://leetcode.com/problems/inorder-successor-in-bst/description/
 Difficulty: Medium
-Topics: Tree, BST, DFS, Binary Tree
+Topics: Tree, binary search tree, DFS, Binary Tree
 */
 class Solution {
 public:

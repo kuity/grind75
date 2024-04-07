@@ -7,7 +7,7 @@ using namespace std;
 /*
 Link: https://leetcode.com/problems/longest-repeating-character-replacement/
 Difficulty: Medium
-Topics: hash table, string, sliding window
+Topics: hashtable, string, sliding window
 */
 class Solution {
 public:

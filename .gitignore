@@ -1,2 +1,13 @@
 main.out
 prog.out
+Indexer
+CMakeCache.txt
+CMakeFiles
+CPackConfig.cmake
+CPackSourceConfig.cmake
+LICENSE
+Makefile
+_deps
+cmake_install.cmake
+compile_commands.json
+.cache

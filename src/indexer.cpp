@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <strings.h>
+#include <sys/_select.h>
 #include <unordered_map>
 #include <map>
 #include <regex>
@@ -49,7 +50,17 @@ static std::string cleantext(GumboNode* node) {
 
 enum UserSelectionType {
     TopicSelection,
-    QuestionSelection
+    QuestionSelection,
+    ActionSelection
+};
+
+enum UserAction {
+    PrintQnDesc,
+    PrintSourceCode,
+    RunSourceCode,
+    OpenWebPage,
+    Restart,
+    Count
 };
 
 struct LCProblem {
@@ -81,11 +92,12 @@ class Indexer {
     fs::path p;
     string ext;
     vector<LCProblem *> *selectedTopic;
+    LCProblem *selectedQuestion;
+    UserAction selectedAction;
 
 public:
     unordered_map<string, vector<LCProblem*>> M;
     vector<tuple<string, int, int, int>> DiffM;
-    LCProblem *selectedQuestion;
 
     Indexer() {
         p = "/Users/lingzhang.jiang/projects/personal/grind75/src";
@@ -180,10 +192,18 @@ public:
         int upperBound;
         if (u == TopicSelection) {
             upperBound = DiffM.size();
-            cout << "\nSelect topic number for details: " << endl;
+            cout << "\nSelect topic number: " << endl;
         } else if (u == QuestionSelection) {
             upperBound = selectedTopic->size();
-            cout << "\nSelect question number for details: " << endl;
+            cout << "\nSelect question number: " << endl;
+        }  else if (u == ActionSelection) {
+            upperBound = UserAction::Count;
+            cout << "\nSelect an action: " << endl;
+            cout << "0. Display question description\n"
+                 << "1. Display solution source code\n"
+                 << "2. Compile and run solution\n"
+                 << "3. Open question in browser\n"
+                 << "4. Go back to topic selection" << endl << endl;
         } else {
             return;
         }
@@ -209,13 +229,26 @@ public:
             selectedTopic = &M[get<0>(DiffM[parsedInput])];
         } else if (u == QuestionSelection) {
             selectedQuestion = selectedTopic->at(parsedInput);
+        } else if (u == ActionSelection) {
+            selectedAction = static_cast<UserAction>(parsedInput);
         } else {
             return;
         }
     }
 
+    void processUserAction() {
+        switch(selectedAction) {
+            case PrintQnDesc: displaySelectedQuestionDesc();
+            case PrintSourceCode: 
+            case RunSourceCode: 
+            case OpenWebPage: 
+            case Restart: 
+            default: return;
+        }
+    }
+
     void displaySelectedQuestionDesc() {
-        cout << selectedQuestion->link << endl;
+        cout << endl << selectedQuestion->link << endl;
         regex pat(R"(problems/([a-z-]+))");
         smatch matches;
         if (!regex_search(selectedQuestion->link, matches, pat)) {
@@ -282,7 +315,8 @@ int main(int argc, char *argv[]) {
     indexer->getUserSelection(TopicSelection);
     indexer->displaySelectedTopic();
     indexer->getUserSelection(QuestionSelection);
-    indexer->displaySelectedQuestionDesc();
+    indexer->getUserSelection(ActionSelection);
+    indexer->processUserAction();
 
     /*
     // 2. Compile the source code

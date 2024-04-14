@@ -12,5 +12,6 @@ struct TreeNode {
 };
 
 void printPreOrder(TreeNode* root);
+void printLevelOrder(TreeNode* root);
 
 #endif 

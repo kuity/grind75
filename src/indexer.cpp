@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <stdexcept>
 #include <strings.h>
 #include <sys/_select.h>
 #include <unordered_map>
@@ -60,18 +59,20 @@ enum UserAction {
     RunSourceCode,
     OpenWebPage,
     Restart,
+    Quit,
     Count
 };
 
 struct LCProblem {
     vector<string> topics;
-    fs::path filepath;
+    string filepath;
     string link;
     string difficulty;
     string name; // let's just use the name of the file
 
-    LCProblem(string filename, string description) {
+    LCProblem(string filename, string description, string fp) {
         name = filename;
+        filepath = fp;
         stringstream ss(description);
         string line;
         getline(ss, line);
@@ -103,6 +104,7 @@ public:
         p = "/Users/lingzhang.jiang/projects/personal/grind75/src";
         ext = ".cpp";
         pattern = R"(Link:.*\nDifficulty:.*\nTopics.*\n)";
+        selectedAction = Restart;
     }
 
     void scanFile(const fs::path& fp) {
@@ -113,7 +115,7 @@ public:
         smatch match;
         if (regex_search(content, match, pattern)) {
             // cout << "File: " << fp << endl;
-            LCProblem *prob = new LCProblem(fp.stem().string(), match.str());
+            LCProblem *prob = new LCProblem(fp.stem().string(), match.str(), fp.string());
             // cout << prob->link << endl;
             // cout << prob->difficulty << endl;
             for (auto t: prob->topics) {
@@ -203,7 +205,8 @@ public:
                  << "1. Display solution source code\n"
                  << "2. Compile and run solution\n"
                  << "3. Open question in browser\n"
-                 << "4. Go back to topic selection" << endl << endl;
+                 << "4. Go back to topic selection\n"
+                 << "5. Quit" << endl << endl;
         } else {
             return;
         }
@@ -216,9 +219,8 @@ public:
             try {
                 parsedInput = stoi(input);
             } catch(exception e) {
-                ostringstream errmsg;
-                errmsg << "Unable to parse input due to " << e.what();
-                throw runtime_error(errmsg.str());
+                cout << "Unable to parse input, please try again " << endl;
+                continue;
             }
             if (parsedInput < 0 || parsedInput >= upperBound) {
                 cout << "invalid selection, please try again" << endl;
@@ -238,13 +240,40 @@ public:
 
     void processUserAction() {
         switch(selectedAction) {
-            case PrintQnDesc: displaySelectedQuestionDesc();
-            case PrintSourceCode: 
-            case RunSourceCode: 
+            case PrintQnDesc: 
+                displaySelectedQuestionDesc(); 
+                break;
+            case PrintSourceCode: {
+                cout << "Reading " << selectedQuestion->filepath << endl;
+                ifstream f(selectedQuestion->filepath);
+                if (f.is_open()) cout << f.rdbuf();
+                break;
+            }
+            case RunSourceCode: {
+                string compileCommand = "g++ -std=c++17 " 
+                    + selectedQuestion->filepath 
+                    + " lib/*.cpp -o prog.out";
+                system(compileCommand.c_str());
+                system("./prog.out");
+                break;
+            }
             case OpenWebPage: 
+                system(("open " + selectedQuestion->link).c_str());
+                break;
             case Restart: 
-            default: return;
+                displayAggrCounts();
+                getUserSelection(TopicSelection);
+                displaySelectedTopic();
+                getUserSelection(QuestionSelection);
+                break;
+            case Quit:
+                exit(0);
+            default: 
+                break;
         }
+        cout << endl;
+        getUserSelection(ActionSelection);
+        processUserAction();
     }
 
     void displaySelectedQuestionDesc() {
@@ -290,15 +319,14 @@ public:
 // 
 // After which, it can do one of a few things:
 // 1. Parse the link, fetch and print the problem description with curl
-//
-// TODO:
 // 2. Print the solution source code 
 // 3. Compile and run the source code
 // 4. Open the LC page in browser
 // 5. Go back to the start (show topics)
 //
-// Super useful functionality
+// TODO:
 // Able to fuzzy search questions
+// Able to generate a boilerplate template
 int main(int argc, char *argv[]) {
     // Using a while loop to iterate through arguments 
     int i = 0; 
@@ -311,21 +339,6 @@ int main(int argc, char *argv[]) {
     Indexer *indexer = new Indexer();
     indexer->scanDirectory();
     indexer->aggrCounts();
-    indexer->displayAggrCounts();
-    indexer->getUserSelection(TopicSelection);
-    indexer->displaySelectedTopic();
-    indexer->getUserSelection(QuestionSelection);
-    indexer->getUserSelection(ActionSelection);
     indexer->processUserAction();
-
-    /*
-    // 2. Compile the source code
-    std::string compileCommand = "g++ " + filename + " -o second_program";
-    system(compileCommand.c_str());
-
-    // 3. Run the compiled program
-    system("./second_program");
-    */
-
     return 0;
 }

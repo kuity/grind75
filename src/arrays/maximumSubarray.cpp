@@ -133,6 +133,21 @@ public:
 
 	return totalSum - overallMin;
     }
+
+    // Rather simple solution tracking 2 variables
+    // We can "reset" continuedSum if num > continuedSum + num
+    // Since there's no value tracking the continuation anymore
+    int maxSubArraySimple(vector<int>& nums) {
+	int maxSum = nums[0];
+        int continuedSum = nums[0];
+        for (int i=1; i<nums.size(); i++) {
+            int num = nums[i];
+            int newContinuedSum = continuedSum + num;
+            continuedSum = (num > newContinuedSum) ? num : newContinuedSum;
+            if (continuedSum > maxSum) maxSum = continuedSum;
+        }
+        return maxSum;
+    }
 };
 
 int main() {

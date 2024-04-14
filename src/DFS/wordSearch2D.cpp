@@ -54,6 +54,30 @@ public:
         }
         return false;
     }
+
+    bool DFS(vector<vector<char>>& board, string &word, int ind, int r, int c) {
+        if (r >= nRows || r < 0 || c >= nCols || c < 0 || board[r][c] != word[ind]) return false;
+        if (ind == word.size()-1) return true;
+        char ch = board[r][c];
+        board[r][c] = '$';
+        bool found = DFS(board, word, ind+1, r+1, c) 
+                    || DFS(board, word, ind+1, r-1, c) 
+                    || DFS(board, word, ind+1, r, c+1) 
+                    || DFS(board, word, ind+1, r, c-1);
+        if (found) return found;
+        board[r][c] = ch;
+        return false;
+    }
+
+    // Less lines of codes with better efficiency
+    bool exist2(vector<vector<char>>& board, string word) {
+        nRows = board.size();
+        nCols = board[0].size();
+        for (auto i=0; i<nRows; i++)
+            for (auto j=0; j<nCols; j++)
+                if (board[i][j] == word[0] && DFS(board, word, 0, i, j)) return true;
+        return false;
+    }
 };
 
 int main() {

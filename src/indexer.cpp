@@ -1,6 +1,7 @@
 #include <boost/filesystem/directory.hpp>
 #include <iostream>
 #include <fstream>
+#include <ostream>
 #include <sstream>
 #include <strings.h>
 #include <sys/_select.h>
@@ -88,6 +89,33 @@ struct LCProblem {
     }
 };
 
+string getUsageString() {
+    stringstream ss;
+    ss << "Usage: " << endl
+        << "--gen/-g <url>      : Provide leetcode url and generate boilerplate" << endl
+        << "--search/-s <query> : Run a fuzzy search on query" << endl
+        << "--help/-h           : Display help" << endl;
+    return ss.str();
+}
+
+string getBoilerplate(string snippet, string url, string difficulty) {
+    stringstream ss;
+    ss << "#include <iostream>" << endl << endl
+        << "using namespace std;" << endl << endl
+        << "/*" << endl
+        << "Link: " << url << endl
+        << "Difficulty: " << difficulty << endl
+        << "Topics: " << endl
+        << "*/" << endl
+        << snippet << endl << endl
+        << "int main() {" << endl
+        << "    Solution *S = new Solution();" << endl
+        << "    int ans;" << endl
+        << "    cout << \"ans is \" << ans;" << endl
+        << "}" << endl;
+    return ss.str();
+}
+
 class Indexer {
     regex pattern;
     fs::path p;
@@ -96,17 +124,6 @@ class Indexer {
     LCProblem *selectedQuestion;
     UserAction selectedAction;
 
-public:
-    unordered_map<string, vector<LCProblem*>> M;
-    vector<tuple<string, int, int, int>> DiffM;
-
-    Indexer() {
-        p = "/Users/lingzhang.jiang/projects/personal/grind75/src";
-        ext = ".cpp";
-        pattern = R"(Link:.*\nDifficulty:.*\nTopics.*\n)";
-        selectedAction = Restart;
-    }
-
     void scanFile(const fs::path& fp) {
         ifstream file(fp.string());
         stringstream buffer;
@@ -114,14 +131,8 @@ public:
         string content = buffer.str();
         smatch match;
         if (regex_search(content, match, pattern)) {
-            // cout << "File: " << fp << endl;
             LCProblem *prob = new LCProblem(fp.stem().string(), match.str(), fp.string());
-            // cout << prob->link << endl;
-            // cout << prob->difficulty << endl;
-            for (auto t: prob->topics) {
-                // cout << t << ",";
-                M[t].push_back(prob);
-            }
+            for (auto t: prob->topics) M[t].push_back(prob);
         }
 
         // cout << content << endl;
@@ -138,7 +149,6 @@ public:
     }
 
     void aggrCounts() {
-        // map<string, tuple<int, int, int>> counts;
         map<string, vector<int>> counts;
         for (auto kv: M) {
             auto topic = kv.first;
@@ -151,7 +161,6 @@ public:
             }
             counts[topic] = V;
         }
-
         for (auto kv: counts) {
             tuple<string, int, int, int> val;
             get<0>(val) = kv.first;
@@ -160,6 +169,18 @@ public:
             get<3>(val) = kv.second[2];
             DiffM.push_back(val);
         }
+    }
+
+public:
+    unordered_map<string, vector<LCProblem*>> M;
+    vector<tuple<string, int, int, int>> DiffM;
+    Indexer() {
+        p = "/Users/lingzhang.jiang/projects/personal/grind75/src";
+        ext = ".cpp";
+        pattern = R"(Link:.*\nDifficulty:.*\nTopics.*\n)";
+        selectedAction = Restart;
+        scanDirectory();
+        aggrCounts();
     }
 
     void displayAggrCounts() {
@@ -290,6 +311,7 @@ public:
         // URL-encode the query to ensure it's safe to include in a URL
         string encodedQuery = cpr::util::urlEncode(query);
         string fullUrl = url + "?query=" + encodedQuery;
+        cout << "full url is " << fullUrl << endl;
         cpr::Response response = cpr::Get(cpr::Url{fullUrl});
         cout << "Status code: " << response.status_code << endl; // Should be 200
         nlohmann::json jsonResponse = nlohmann::json::parse(response.text);
@@ -301,44 +323,106 @@ public:
         GumboOutput *output = gumbo_parse(content.c_str());
         cout << cleantext(output->root) << endl;
     }
+
+    void writeTemplateFile(string url) {
+        cout << "Generate boilerplate code for " << url << endl;
+        regex pat(R"(problems/([a-z-]+))");
+        smatch matches;
+        if (!regex_search(url, matches, pat)) {
+            cout << "invalid url provided: " << url << endl;
+            return;
+        }
+
+        string title = matches[1].str();
+        string query = R"({ question(titleSlug:")" + title + R"(") {difficulty,codeSnippets{code}} })";
+        cpr::Header headers = { {"Content-Type", "application/json"} };
+        string encodedQuery = cpr::util::urlEncode(query);
+        string baseUrl = "https://leetcode.com/graphql";
+        string fullUrl = baseUrl + "?query=" + encodedQuery;
+        // cout << "full url is " << fullUrl << endl;
+        cpr::Response response = cpr::Get(cpr::Url{fullUrl});
+        // cout << "Status code: " << response.status_code << endl;
+        if (response.status_code != 200) {
+            cout << "Graphql query failed" << endl;
+            return;
+        }
+
+        nlohmann::json jsonResponse = nlohmann::json::parse(response.text);
+        if (jsonResponse["data"]["question"]["codeSnippets"][0]["code"] == nullptr ||
+        jsonResponse["data"]["question"]["difficulty"] == nullptr) {
+            cout << "Unable to find required fields in json" << endl;
+            return;
+        }
+
+        string snippet = jsonResponse["data"]["question"]["codeSnippets"][0]["code"];
+        string difficulty = jsonResponse["data"]["question"]["difficulty"];
+        string boilerplate = getBoilerplate(snippet, url, difficulty);
+        cout << boilerplate << endl;
+        string filename = p.string() + "/temp/tmp.cpp";
+        ofstream file(filename);
+        file << boilerplate;
+        cout << "boilerplate written to " << filename << endl;
+        file.close();
+    }
 };
 
-// If no cmdline params, it should show a list of topics
-// It should enter into each directory and parse the header lines
-// It should look for this pattern:
-// Link: xxx
-// Difficulty: xxx
-// Topics: xxx
-//
-// It should aggregate questions under each topics and list them out topic | easy | med | hard
-// eg. 1. strings | 1 | 5 | 0
-// 
-// Then, able to select a topic to show more details
-// eg. Strings
-// 1. Problem A. Difficulty Med. Topics: a, b, c
-// 
-// After which, it can do one of a few things:
-// 1. Parse the link, fetch and print the problem description with curl
-// 2. Print the solution source code 
-// 3. Compile and run the source code
-// 4. Open the LC page in browser
-// 5. Go back to the start (show topics)
-//
-// TODO:
-// Able to fuzzy search questions
-// Able to generate a boilerplate template
+/*
+ * If no cmdline params, it should show a list of topics
+ * It should enter into each directory and parse the header lines
+ * It should look for this pattern:
+ * Link: xxx
+ * Difficulty: xxx
+ * Topics: xxx
+
+ * It should aggregate questions under each topics and list them out topic | easy | med | hard
+ * eg. 1. strings | 1 | 5 | 0
+ * 
+ * Then, able to select a topic to show more details
+ * eg. Strings
+ * 1. Problem A. Difficulty Med. Topics: a, b, c
+ * 
+ * After which, it can do one of a few things:
+ * 1. Parse the link, fetch and print the problem description with curl
+ * 2. Print the solution source code 
+ * 3. Compile and run the source code
+ * 4. Open the LC page in browser
+ * 5. Go back to the start (show topics)
+
+ * TODO:
+ * Able to fuzzy search questions
+ * Refactoring: move the graphql functions to separate util file
+ *
+ * massively helpful: https://github.com/akarsh1995/leetcode-graphql-queries/blob/main/problem_solve_page/problem_solve_page.graphql
+*/
 int main(int argc, char *argv[]) {
-    // Using a while loop to iterate through arguments 
-    int i = 0; 
-    while (i < argc) { 
-        cout << "Argument " << i + 1 << ": " << argv[i] 
-             << endl; 
-        i++; 
-    } 
+    unordered_map<string, string> Cfg;
+    auto quitProg = []() { 
+        string usage = getUsageString();
+        cout << usage; 
+        exit(-1); 
+    };
+
+    // Parse args
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            // Handle flags
+            if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+                quitProg();
+            } else if (strcmp(argv[i], "--gen") == 0 || strcmp(argv[i], "-g") == 0) {
+                if (i==argc-1) quitProg();
+                Cfg["gen"] = argv[++i];
+                // string lcUrl = "https://leetcode.com/graphql";
+                // string query = R"({ question(titleSlug:")" + matches[1].str() + R"(") {content} })";
+            } else if (strcmp(argv[i], "--search") == 0 || strcmp(argv[i], "-s") == 0) {
+                if (i==argc-1) quitProg();
+                auto search = argv[++i];
+                cout << "Run fuzzy search for " << search << endl;
+            } else quitProg();
+        } 
+    }
 
     Indexer *indexer = new Indexer();
-    indexer->scanDirectory();
-    indexer->aggrCounts();
-    indexer->processUserAction();
+    if (argc == 1) indexer->processUserAction();
+    else if (Cfg.find("gen") != Cfg.end()) indexer->writeTemplateFile(Cfg["gen"]);
     return 0;
 }

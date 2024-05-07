@@ -10,6 +10,46 @@ Link: https://leetcode.com/problems/number-of-islands/
 Difficulty: Medium
 Topics: array, dfs, bfs, union find, matrix
 */
+class UnionFind {
+    int rows, cols;
+    vector<int> Parent;
+public:
+    int count;
+    int getIndex(int m, int n) {
+        return m*cols + n;
+    }
+
+    UnionFind(vector<vector<char>>& grid) {
+        rows = grid.size();
+        cols = grid[0].size();
+        count = 0;
+        Parent = vector<int>(rows*cols);
+        for (auto i=0; i<rows; i++) {
+            for (auto j=0; j<cols; j++) {
+                if (grid[i][j] == '0') continue;
+                auto index = getIndex(i, j);
+                Parent[index] = index;
+                count++;
+            }
+        }
+    }
+
+    int find(int c) {
+        if (Parent[c] == c) return c;
+        Parent[c] = find(Parent[c]);
+        return Parent[c];
+    }
+
+    void ufunion(int a, int b) {
+        auto parentA = find(a);
+        auto parentB = find(b);
+        if (parentA != parentB) {
+            Parent[parentA] = parentB;
+            count--;
+        }
+    }
+};
+
 class Solution {
 public:
     // DFS traversal
@@ -50,7 +90,38 @@ public:
 	}
 	return num;
     }
+
+    int numIslandsUF(vector<vector<char>>& grid) {
+        int rows = grid.size();
+        int cols = grid[0].size();
+        UnionFind *UF = new UnionFind(grid);
+        
+        for (auto i=0; i<rows; i++) {
+            for (auto j=0; j<cols; j++) {
+                if (grid[i][j] == '0') continue;
+                auto indexA = UF->getIndex(i, j);
+                if (i+1<rows && grid[i+1][j] == '1') {
+                    auto indexB = UF->getIndex(i+1, j);
+                    UF->ufunion(indexA, indexB);
+                }
+                if (i-1>=0 && grid[i-1][j] == '1') {
+                    auto indexB = UF->getIndex(i-1, j);
+                    UF->ufunion(indexA, indexB);
+                }
+                if (j+1<cols && grid[i][j+1] == '1') {
+                    auto indexB = UF->getIndex(i, j+1);
+                    UF->ufunion(indexA, indexB);
+                }
+                if (j-1>=0 && grid[i][j-1] == '1') {
+                    auto indexB = UF->getIndex(i, j-1);
+                    UF->ufunion(indexA, indexB);
+                }
+            }
+        }
+        return UF->count;
+    }
 };
+
 
 int main() {
     vector<vector<char>> grid = {

@@ -17,6 +17,7 @@
 #include "nlohmann/json_fwd.hpp"
 #include <nlohmann/json.hpp>
 #include <gumbo.h>
+#include <random>
 
 namespace fs = boost::filesystem;
 using namespace std;
@@ -116,6 +117,32 @@ string getBoilerplate(string snippet, string url, string difficulty) {
     return ss.str();
 }
 
+nlohmann::json queryLeetCode(string queryParams, string questionUrl) {
+    regex pat(R"(problems/([a-z-]+))");
+    smatch matches;
+    if (!regex_search(questionUrl, matches, pat)) {
+        cout << "No match found." << endl;
+        return nullptr;
+    }
+    string query = R"({ question(titleSlug:")" + matches[1].str() + queryParams;
+    string url = "https://leetcode.com/graphql";
+    cpr::Header headers = { {"Content-Type", "application/json"} };
+    // URL-encode the query to ensure it's safe to include in a URL
+    string encodedQuery = cpr::util::urlEncode(query);
+    string fullUrl = url + "?query=" + encodedQuery;
+    cout << "full url is " << fullUrl << endl;
+    cpr::Response response = cpr::Get(cpr::Url{fullUrl});
+    cout << "Status code: " << response.status_code << endl; // Should be 200
+    if (response.status_code != 200) {
+        cout << "Graphql query failed" << endl;
+        exit(-1);
+    }
+
+    nlohmann::json jsonResponse = nlohmann::json::parse(response.text);
+    return jsonResponse;
+}
+
+
 class Indexer {
     regex pattern;
     fs::path p;
@@ -133,8 +160,8 @@ class Indexer {
         if (regex_search(content, match, pattern)) {
             LCProblem *prob = new LCProblem(fp.stem().string(), match.str(), fp.string());
             for (auto t: prob->topics) M[t].push_back(prob);
+            V.push_back(prob);
         }
-
         // cout << content << endl;
     }
 
@@ -173,6 +200,7 @@ class Indexer {
 
 public:
     unordered_map<string, vector<LCProblem*>> M;
+    vector<LCProblem*> V;
     vector<tuple<string, int, int, int>> DiffM;
     Indexer() {
         p = "/Users/lingzhang.jiang/projects/personal/grind75/src";
@@ -299,22 +327,8 @@ public:
 
     void displaySelectedQuestionDesc() {
         cout << endl << selectedQuestion->link << endl;
-        regex pat(R"(problems/([a-z-]+))");
-        smatch matches;
-        if (!regex_search(selectedQuestion->link, matches, pat)) {
-            cout << "No match found." << endl;
-            return;
-        } 
-        string url = "https://leetcode.com/graphql";
-        string query = R"({ question(titleSlug:")" + matches[1].str() + R"(") {content} })";
-        cpr::Header headers = { {"Content-Type", "application/json"} };
-        // URL-encode the query to ensure it's safe to include in a URL
-        string encodedQuery = cpr::util::urlEncode(query);
-        string fullUrl = url + "?query=" + encodedQuery;
-        cout << "full url is " << fullUrl << endl;
-        cpr::Response response = cpr::Get(cpr::Url{fullUrl});
-        cout << "Status code: " << response.status_code << endl; // Should be 200
-        nlohmann::json jsonResponse = nlohmann::json::parse(response.text);
+        auto contentParams = R"(") {content} })";
+        auto jsonResponse = queryLeetCode(contentParams, selectedQuestion->link);
         if (jsonResponse["data"]["question"]["content"] == nullptr) {
             cout << "Not able to find question description" << endl;
             return;
@@ -326,34 +340,13 @@ public:
 
     void writeTemplateFile(string url) {
         cout << "Generate boilerplate code for " << url << endl;
-        regex pat(R"(problems/([a-z-]+))");
-        smatch matches;
-        if (!regex_search(url, matches, pat)) {
-            cout << "invalid url provided: " << url << endl;
-            return;
-        }
-
-        string title = matches[1].str();
-        string query = R"({ question(titleSlug:")" + title + R"(") {difficulty,codeSnippets{code}} })";
-        cpr::Header headers = { {"Content-Type", "application/json"} };
-        string encodedQuery = cpr::util::urlEncode(query);
-        string baseUrl = "https://leetcode.com/graphql";
-        string fullUrl = baseUrl + "?query=" + encodedQuery;
-        // cout << "full url is " << fullUrl << endl;
-        cpr::Response response = cpr::Get(cpr::Url{fullUrl});
-        // cout << "Status code: " << response.status_code << endl;
-        if (response.status_code != 200) {
-            cout << "Graphql query failed" << endl;
-            return;
-        }
-
-        nlohmann::json jsonResponse = nlohmann::json::parse(response.text);
+        auto snippetParams = R"(") {difficulty,codeSnippets{code}} })";
+        auto jsonResponse = queryLeetCode(snippetParams, url);
         if (jsonResponse["data"]["question"]["codeSnippets"][0]["code"] == nullptr ||
         jsonResponse["data"]["question"]["difficulty"] == nullptr) {
             cout << "Unable to find required fields in json" << endl;
             return;
         }
-
         string snippet = jsonResponse["data"]["question"]["codeSnippets"][0]["code"];
         string difficulty = jsonResponse["data"]["question"]["difficulty"];
         string boilerplate = getBoilerplate(snippet, url, difficulty);
@@ -363,6 +356,19 @@ public:
         file << boilerplate;
         cout << "boilerplate written to " << filename << endl;
         file.close();
+    }
+
+    void openRandQuestion() {
+        int numQ = V.size();
+        random_device rd; // Obtain a random number from hardware
+        mt19937 eng(rd()); // Seed the generator
+        uniform_int_distribution<> distr(0, numQ); // Define the range
+        // Generate and print a random integer
+        int randomInt = distr(eng);
+        cout << "Random integer: " << randomInt << endl;
+        auto randomProb = V[randomInt];
+        system(("open " + randomProb->link).c_str());
+        exit(1); 
     }
 };
 
@@ -387,10 +393,6 @@ public:
  * 3. Compile and run the source code
  * 4. Open the LC page in browser
  * 5. Go back to the start (show topics)
-
- * TODO:
- * Able to fuzzy search questions
- * Refactoring: move the graphql functions to separate util file
  *
  * massively helpful: https://github.com/akarsh1995/leetcode-graphql-queries/blob/main/problem_solve_page/problem_solve_page.graphql
 */
@@ -411,18 +413,21 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "--gen") == 0 || strcmp(argv[i], "-g") == 0) {
                 if (i==argc-1) quitProg();
                 Cfg["gen"] = argv[++i];
-                // string lcUrl = "https://leetcode.com/graphql";
-                // string query = R"({ question(titleSlug:")" + matches[1].str() + R"(") {content} })";
             } else if (strcmp(argv[i], "--search") == 0 || strcmp(argv[i], "-s") == 0) {
                 if (i==argc-1) quitProg();
                 auto search = argv[++i];
                 cout << "Run fuzzy search for " << search << endl;
-            } else quitProg();
+            } else if (strcmp(argv[i], "--random") == 0 || strcmp(argv[i], "-r") == 0) {
+                cout << "Opening a random question " << endl;
+                Cfg["rand"] = "rand";
+            }
+            else quitProg();
         } 
     }
 
     Indexer *indexer = new Indexer();
     if (argc == 1) indexer->processUserAction();
     else if (Cfg.find("gen") != Cfg.end()) indexer->writeTemplateFile(Cfg["gen"]);
+    else if (Cfg.find("rand") != Cfg.end()) indexer->openRandQuestion();
     return 0;
 }

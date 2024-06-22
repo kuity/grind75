@@ -7,7 +7,7 @@ using namespace std;
 /*
 Link: https://leetcode.com/problems/set-matrix-zeroes/
 Difficulty: Medium
-Topics: array, hash table, matrix
+Topics: array, hashtable, matrix
 */
 class Solution {
 public:
